@@ -11,9 +11,9 @@ import jwt from "jsonwebtoken";
 
 // Register a new user
 export const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { name,email, password } = req.body;
     try {
-        const user = new User({ email, password });
+        const user = new User({ name,email, password });
         await user.save();
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -26,11 +26,13 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
-        if (!user || !(await user.comparePassword(password))) {
+        if(!user){
+            return res.status(400).json({ error: 'User not found' });
+        }else if (!user || !(await user.comparePassword(password))) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
         const token = jwt.sign({ id: user._id }, "UserJwtSecretKey", { expiresIn: '1h' });
-        res.json({ token });
+        res.json({token: token,  user_id: user._id});
     } catch (error) {
         console.log(error);
         

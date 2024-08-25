@@ -6,7 +6,7 @@ import dotenv, { config } from 'dotenv';
 import connectDB from './config/db.js';  // Import the connectDB function
 import route from "./routes/PollRoute.js";
 import authRouter from "./routes/authRoute.js";
-import router from './routes/PollRoute.js';
+import pollRouter from './routes/PollRoute.js';
 // Load environment variables from .env file
 dotenv.config();
 
@@ -35,8 +35,8 @@ app.use("/user", authRouter);
 
 // localhost:3000/user/authRouter
 
-// Start the server
-app.use("/api", router);
+// Start the server poll routes
+app.use("/poll", pollRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
