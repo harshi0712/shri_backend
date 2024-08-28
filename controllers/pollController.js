@@ -1,14 +1,14 @@
 ////////////Handles poll CRUD operations, voting, and results retrieval.
 
 import Poll from "../models/PollModel.js";
-import jwt from "jsonwebtoken"; // Assuming you're using this for JWT operations
+//mport jwt from "jsonwebtoken"; // Assuming you're using this for JWT operations
 import authenticate from "../middleware/authenticate.js";
 
 const createPoll = async (req, res) => {
   console.log("req", req);
   console.log(req.body);
 
-  const { title, description, options } = req.body;
+  const { title, description, options, user } = req.body;
 
   // Validate the options format
   if (
@@ -23,6 +23,7 @@ const createPoll = async (req, res) => {
       title,
       description,
       options,
+      user,
       votesByUser: new Map(), // Initialize votesByUser as an empty Map
     });
 
@@ -83,15 +84,17 @@ const deletePoll = async (req, res) => {
 
 const voteOnPoll = async (req, res) => {
   const { userId, option_id } = req.body; // Extract userId and optionText from the request body
+  const user = userId;
 
   try {
+
     const poll = await Poll.findById(req.params.id);
     if (!poll || poll.status !== "active") {
       return res.status(400).json({ error: "Invalid poll" });
     }
 
     // Check if the user has already voted
-    if (poll.votesByUser.has(userId)) {
+    if (poll.votesByUser.has(user)) {
       return res.status(400).json({ error: "User has already voted" });
     }
 
@@ -103,14 +106,17 @@ const voteOnPoll = async (req, res) => {
       return res.status(400).json({ error: "Option not found" });
     }
 
+    console.log(userId, option_id);
+    
     // Increment the vote count
     option.votes = (option.votes || 0) + 1;
-    poll.votesByUser.set(userId, option_id); // Record user's vote
+    poll.votesByUser.set(user, option_id); // Record user's vote
     await poll.save();
 
     res.json({ message: "Vote recorded" });
   } catch (error) {
-    res.status(500).json({ error: "Error recording vote" });
+    console.log(error);
+    return res.status(500).json({ error: "Error recording vote" });
   }
 };
 

@@ -9,14 +9,18 @@ const PollSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String },
     options: { type: [OptionSchema], required: true },  // Using an array of OptionSchema
-    status: { 
-        type: String, 
-        enum: ['active', 'inactive'],  // Only allows these values
-        default: 'active' 
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
-    votesByUser: { 
-        type: Map, 
-        of: String, 
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],  // Only allows these values
+        default: 'active'
+    },
+    votesByUser: {
+        type: Map,
+        of: String,
         default: {}  // Initialize as an empty map to store user votes
     },
 }, {

@@ -6,7 +6,7 @@
 ////Handles user registration and login logic.
 
 
-import User from '../models/userModel.js';  // Ensure this path is correct
+import User from '../models/userModel.js'; 
 import jwt from "jsonwebtoken";
 
 // Register a new user
